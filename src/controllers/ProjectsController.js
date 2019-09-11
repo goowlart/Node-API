@@ -3,17 +3,47 @@ const mongoose = require('mongoose')
 const Project = mongoose.model('Project')
 const Task = mongoose.model('Task')
 
+const TasksIncomplete = require('../methods/TasksIncomplete')
+const TasksCompleted = require('../methods/TasksCompleted')
+
 module.exports = {
   async index(req, res) {
     try {
-      const projects = await Project.find().populate(['user', 'tasks']);
+      const projects = await Project.find().populate(['user', 'tasks']);    
 
-      return res.send({ projects })
+      const incomplete = await TasksIncomplete.method(Task)
+      const completed = await TasksCompleted.method(Task)
+
+
+      return res.send({ 
+        projects,
+        tasks: [ 
+          {
+            title: 'Tasks', 
+            creatable: true,
+            completed: false,
+            tasks: incomplete
+          }, 
+          {
+            title: 'Pause', 
+            creatable: false,
+            completed: false,
+            tasks: incomplete
+          }, 
+          {
+            title: 'Completed', 
+            creatable: false,
+            completed: true,
+            tasks: completed
+          }
+        ]
+       })
 
     } catch (err) {
       return res.status(400).send({ error: 'Error loading projects' })
     }
   },
+
 
   async show(req, res) {
     try {
@@ -25,6 +55,8 @@ module.exports = {
       return res.status(400).send({ error: 'Error loading project' })
     }
   },
+
+  
 
   async create(req, res) {
     try {

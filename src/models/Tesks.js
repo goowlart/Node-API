@@ -3,6 +3,10 @@ const mongoose = require('mongoose');
 const TaskShema = new mongoose.Schema({
     title: {
         type: String,
+        required: false
+    },
+    text: {
+        type: String,
         required: true
     },
     project: {
@@ -13,10 +17,6 @@ const TaskShema = new mongoose.Schema({
     assignedTo: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
-    },
-    description: {
-        type: String,
         required: false
     },
     priority: {
